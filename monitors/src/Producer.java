@@ -1,15 +1,15 @@
 public class Producer implements Runnable {
-    private Monitor monitor;
+    private MonitorBuffer monitorBuffer;
 
-    public Producer(Monitor monitor) {
-        this.monitor = monitor;
+    public Producer(MonitorBuffer monitorBuffer) {
+        this.monitorBuffer = monitorBuffer;
     }
 
     @Override
     public void run() {
         while (true) {
             try {
-                monitor.produce();
+                monitorBuffer.produce();
             } catch (InterruptedException e) {
 
             }

@@ -1,15 +1,15 @@
 public class Consumer implements Runnable {
-    private Monitor monitor;
+    private MonitorBuffer monitorBuffer;
 
-    public Consumer(Monitor monitor) {
-        this.monitor = monitor;
+    public Consumer(MonitorBuffer monitorBuffer) {
+        this.monitorBuffer = monitorBuffer;
     }
 
     @Override
     public void run() {
         while (true) {
             try {
-                monitor.consume();
+                monitorBuffer.consume();
             } catch (InterruptedException e) {
 
             }

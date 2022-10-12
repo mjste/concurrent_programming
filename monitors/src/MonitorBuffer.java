@@ -1,8 +1,8 @@
-public class Monitor {
+public class MonitorBuffer {
     int buffer = 0;
     int maxBuffer;
 
-    public Monitor(int maxBuffer) {
+    public MonitorBuffer(int maxBuffer) {
         this.maxBuffer = maxBuffer;
     }
 
