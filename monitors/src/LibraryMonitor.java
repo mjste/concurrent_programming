@@ -6,6 +6,7 @@ public class LibraryMonitor {
     int writing = 0;
     int wantsToWrite = 0;
 
+    Lock lock = new ReentrantLock();
 
     public synchronized void beginReading() {
         while (writing + wantsToWrite > 0) {
