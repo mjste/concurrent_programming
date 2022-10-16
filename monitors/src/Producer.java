@@ -8,11 +8,7 @@ public class Producer implements Runnable {
     @Override
     public void run() {
         while (true) {
-            try {
                 monitorBuffer.produce();
-            } catch (InterruptedException e) {
-
-            }
         }
     }
 }

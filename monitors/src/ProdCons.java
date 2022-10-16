@@ -3,8 +3,8 @@ public class ProdCons {
 
     public void run() {
         int n = 2;
-        int m = 1;
-        MonitorBuffer monitorBuffer = new MonitorBuffer(2);
+        int m = 2;
+        MonitorBuffer monitorBuffer = new MonitorBuffer(5);
 
         for (int i = 0; i < n; i++) {
             Producer producer = new Producer(monitorBuffer);

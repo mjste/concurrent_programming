@@ -8,11 +8,7 @@ public class Consumer implements Runnable {
     @Override
     public void run() {
         while (true) {
-            try {
                 monitorBuffer.consume();
-            } catch (InterruptedException e) {
-
-            }
         }
     }
 }

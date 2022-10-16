@@ -9,7 +9,7 @@ public class Writer implements Runnable{
         while (true) {
             this.monitor.beginWriting();
             try {
-                Thread.sleep(200);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

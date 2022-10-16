@@ -1,7 +1,7 @@
 public class ReadWrite {
     public void run() {
-        int n = 1;
-        int m = 1;
+        int n = 2;
+        int m = 2;
 
         LibraryMonitor monitor = new LibraryMonitor();
 
