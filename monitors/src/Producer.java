@@ -1,3 +1,5 @@
+import java.util.Random;
+
 public class Producer implements Runnable {
     private MonitorBuffer monitorBuffer;
 
@@ -7,8 +9,9 @@ public class Producer implements Runnable {
 
     @Override
     public void run() {
+        Random random = new Random();
         while (true) {
-                monitorBuffer.produce();
+                monitorBuffer.produce(random.nextInt(5)+1);
         }
     }
 }

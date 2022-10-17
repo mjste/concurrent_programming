@@ -1,3 +1,5 @@
+import java.util.Random;
+
 public class Consumer implements Runnable {
     private MonitorBuffer monitorBuffer;
 
@@ -7,8 +9,9 @@ public class Consumer implements Runnable {
 
     @Override
     public void run() {
+        Random random = new Random();
         while (true) {
-                monitorBuffer.consume();
+                monitorBuffer.consume(random.nextInt(5)+1);
         }
     }
 }

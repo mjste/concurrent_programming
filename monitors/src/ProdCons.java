@@ -2,9 +2,9 @@ public class ProdCons {
 
 
     public void run() {
-        int n = 2;
-        int m = 2;
-        MonitorBuffer monitorBuffer = new MonitorBuffer(5);
+        int n = 1;
+        int m = 1;
+        MonitorBuffer monitorBuffer = new MonitorBuffer(9);
 
         for (int i = 0; i < n; i++) {
             Producer producer = new Producer(monitorBuffer);

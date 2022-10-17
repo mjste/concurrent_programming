@@ -5,22 +5,23 @@ import java.util.concurrent.locks.ReentrantLock;
 public class MonitorBuffer {
     int buffer = 0;
     int maxBuffer;
-    private Lock lock = new ReentrantLock();
-    private Condition producerCond = lock.newCondition();
-    private Condition consumerCond = lock.newCondition();
+    private final Lock lock = new ReentrantLock();
+    private final Condition producerCond = lock.newCondition();
+    private final Condition consumerCond = lock.newCondition();
 
     public MonitorBuffer(int maxBuffer) {
         this.maxBuffer = maxBuffer;
     }
 
-    void produce() {
+    void produce(int n) {
         lock.lock();
+        System.out.println(Thread.currentThread().getName()+" want to produce "+n);
         try {
-            while (buffer == maxBuffer) {
+            while (maxBuffer-buffer < n) {
                 producerCond.await();
             }
-            buffer++;
-            System.out.println(Thread.currentThread().getName()+" produced, buffer: "+buffer);
+            buffer += n;
+            System.out.println(Thread.currentThread().getName()+" produced "+n+", buffer: "+buffer);
             consumerCond.signal();
         } catch (InterruptedException ignored) {
 
@@ -29,14 +30,15 @@ public class MonitorBuffer {
         }
     }
 
-    void consume() {
+    void consume(int n) {
         lock.lock();
+        System.out.println(Thread.currentThread().getName()+" want to consume "+n);
         try {
-            while (buffer == 0) {
+            while (buffer < n) {
                 consumerCond.await();
             }
-            buffer--;
-            System.out.println(Thread.currentThread().getName()+" consumed, buffer: "+buffer);
+            buffer -= n;
+            System.out.println(Thread.currentThread().getName()+" consumed "+n+", buffer: "+buffer);
             producerCond.signal();
         } catch (InterruptedException ignored) {
 
