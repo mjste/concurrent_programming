@@ -1,9 +1,9 @@
 import java.util.Random;
 
 public class Consumer implements Runnable {
-    private MonitorBuffer monitorBuffer;
+    private final IMonitorBuffer monitorBuffer;
 
-    public Consumer(MonitorBuffer monitorBuffer) {
+    public Consumer(IMonitorBuffer monitorBuffer) {
         this.monitorBuffer = monitorBuffer;
     }
 

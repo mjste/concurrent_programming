@@ -2,15 +2,18 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-// This version might suffer to starvation
-public class MonitorBuffer implements IMonitorBuffer{
+public class UpgradedMonitorBuffer implements IMonitorBuffer{
     int buffer = 0;
     int maxBuffer;
+    boolean waitingProducer = false;
+    boolean waitingConsumer = false;
     private final Lock lock = new ReentrantLock();
-    private final Condition producerCond = lock.newCondition();
-    private final Condition consumerCond = lock.newCondition();
+    private final Condition otherProducersCond = lock.newCondition();
+    private final Condition firstProducerCond = lock.newCondition();
+    private final Condition otherConsumersCond = lock.newCondition();
+    private final Condition firstConsumerCond = lock.newCondition();
 
-    public MonitorBuffer(int maxBuffer) {
+    public UpgradedMonitorBuffer(int maxBuffer) {
         this.maxBuffer = maxBuffer;
     }
 
@@ -18,12 +21,18 @@ public class MonitorBuffer implements IMonitorBuffer{
         lock.lock();
         System.out.println(Thread.currentThread().getName()+" want to produce "+n);
         try {
-            while (maxBuffer-buffer < n) {
-                producerCond.await();
+            while (waitingProducer) {
+                otherProducersCond.await();
+            }
+            while (2*maxBuffer - buffer < n) {
+                waitingProducer = true;
+                firstProducerCond.await();
             }
             buffer += n;
+            waitingProducer = false;
+            otherProducersCond.signal();
+            firstConsumerCond.signal();
             System.out.println(Thread.currentThread().getName()+" produced "+n+", buffer: "+buffer);
-            consumerCond.signal();
         } catch (InterruptedException ignored) {
 
         } finally {
@@ -35,12 +44,17 @@ public class MonitorBuffer implements IMonitorBuffer{
         lock.lock();
         System.out.println(Thread.currentThread().getName()+" want to consume "+n);
         try {
+            while (waitingConsumer) {
+                otherConsumersCond.await();
+            }
             while (buffer < n) {
-                consumerCond.await();
+                firstConsumerCond.await();
             }
             buffer -= n;
+            waitingConsumer = false;
+            otherConsumersCond.signal();
+            firstProducerCond.signal();
             System.out.println(Thread.currentThread().getName()+" consumed "+n+", buffer: "+buffer);
-            producerCond.signal();
         } catch (InterruptedException ignored) {
 
         } finally {

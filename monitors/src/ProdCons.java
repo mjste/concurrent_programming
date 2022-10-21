@@ -4,7 +4,7 @@ public class ProdCons {
     public void run() {
         int n = 1;
         int m = 1;
-        MonitorBuffer monitorBuffer = new MonitorBuffer(9);
+        IMonitorBuffer monitorBuffer = new UpgradedMonitorBuffer(9);
 
         for (int i = 0; i < n; i++) {
             Producer producer = new Producer(monitorBuffer);

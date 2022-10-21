@@ -1,9 +1,9 @@
 import java.util.Random;
 
 public class Producer implements Runnable {
-    private MonitorBuffer monitorBuffer;
+    private final IMonitorBuffer monitorBuffer;
 
-    public Producer(MonitorBuffer monitorBuffer) {
+    public Producer(IMonitorBuffer monitorBuffer) {
         this.monitorBuffer = monitorBuffer;
     }
 
