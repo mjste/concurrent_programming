@@ -2,21 +2,21 @@ public class ProcConsEngine {
 
 
     public void run() {
-        int n = 2;
-        int m = 2;
-        int bound = 2;
-        IMonitorBuffer monitorBuffer = new DoubleLockMonitorBuffer(4);
+        int producers = 2;
+        int consumers = 2;
+        int maxPackage = 2;
+        int seed = 42;
 
-        for (int i = 0; i < n; i++) {
-            Producer producer = new Producer(monitorBuffer, bound);
-            Thread thread = new Thread(producer);
-            thread.start();
+        IMonitorBuffer monitorBuffer = new UpgradedMonitorBuffer(4);
+
+        for (int i = 0; i < producers; i++) {
+            Producer producer = new Producer(monitorBuffer, maxPackage, seed+i);
+            new Thread(producer).start();
         }
 
-        for (int i = 0; i < m; i++) {
-            Consumer consumer = new Consumer(monitorBuffer, bound);
-            Thread thread = new Thread(consumer);
-            thread.start();
+        for (int i = 0; i < consumers; i++) {
+            Consumer consumer = new Consumer(monitorBuffer, maxPackage, seed+i+154);
+            new Thread(consumer).start();
         }
     }
 }

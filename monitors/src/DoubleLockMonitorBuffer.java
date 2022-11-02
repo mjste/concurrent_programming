@@ -50,4 +50,3 @@ public class DoubleLockMonitorBuffer implements IMonitorBuffer {
         consumerLock.unlock();
     }
 }
-
