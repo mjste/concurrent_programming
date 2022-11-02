@@ -5,7 +5,7 @@ public class ProcConsEngine {
         int n = 2;
         int m = 2;
         int bound = 2;
-        IMonitorBuffer monitorBuffer = new DegradedMonitorBuffer(4);
+        IMonitorBuffer monitorBuffer = new DoubleLockMonitorBuffer(4);
 
         for (int i = 0; i < n; i++) {
             Producer producer = new Producer(monitorBuffer, bound);
