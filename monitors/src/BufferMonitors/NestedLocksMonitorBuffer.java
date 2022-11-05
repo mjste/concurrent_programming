@@ -1,19 +1,27 @@
+package BufferMonitors;
+
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class DoubleLockMonitorBuffer implements IMonitorBuffer {
-    int buffer = 0;
-    int maxBuffer;
-    ReentrantLock producerLock = new ReentrantLock();
-    ReentrantLock consumerLock = new ReentrantLock();
-    ReentrantLock commonLock = new ReentrantLock();
-    Condition consumerCondition = commonLock.newCondition();
-    Condition producerCondition = commonLock.newCondition();
+/*
+This version is starvation and deadlock free, utilizes nested locks
+*/
+public class NestedLocksMonitorBuffer implements IMonitorBuffer {
+    private int buffer = 0;
+    private final int maxBuffer;
+    private long total_items_consumed = 0;
+    private long total_times_consumed = 0;
+    private final ReentrantLock producerLock = new ReentrantLock();
+    private final ReentrantLock consumerLock = new ReentrantLock();
+    private final ReentrantLock commonLock = new ReentrantLock();
+    private final Condition consumerCondition = commonLock.newCondition();
+    private final Condition producerCondition = commonLock.newCondition();
 
-    public DoubleLockMonitorBuffer(int maxBuffer) {
+    public NestedLocksMonitorBuffer(int maxBuffer) {
         this.maxBuffer = maxBuffer;
     }
 
+    @Override
     public void produce(int n) {
         producerLock.lock();
         System.out.println(Thread.currentThread().getName() + " want to produce " + n);
@@ -32,6 +40,7 @@ public class DoubleLockMonitorBuffer implements IMonitorBuffer {
         producerLock.unlock();
     }
 
+    @Override
     public void consume(int n) {
         consumerLock.lock();
         System.out.println(Thread.currentThread().getName() + " want to consume " + n);
@@ -44,9 +53,21 @@ public class DoubleLockMonitorBuffer implements IMonitorBuffer {
             }
         }
         buffer -= n;
+        total_items_consumed += n;
+        total_times_consumed++;
         System.out.println(Thread.currentThread().getName() + " consumed " + n);
         producerCondition.signal();
         commonLock.unlock();
         consumerLock.unlock();
+    }
+
+    @Override
+    public long get_total_consumed() {
+        return total_items_consumed;
+    }
+
+    @Override
+    public long get_total_operations() {
+        return total_times_consumed;
     }
 }

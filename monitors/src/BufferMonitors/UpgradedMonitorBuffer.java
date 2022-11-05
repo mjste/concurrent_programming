@@ -1,12 +1,16 @@
+package BufferMonitors;
+
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class UpgradedMonitorBuffer implements IMonitorBuffer{
-    int buffer = 0;
-    int maxBuffer;
-    boolean waitingProducer = false;
-    boolean waitingConsumer = false;
+public class UpgradedMonitorBuffer implements IMonitorBuffer {
+    private int buffer = 0;
+    private final int maxBuffer;
+    private long total_items_consumed = 0;
+    private long total_times_consumed = 0;
+    private boolean waitingProducer = false;
+    private boolean waitingConsumer = false;
     private final Lock lock = new ReentrantLock();
     private final Condition otherProducersCond = lock.newCondition();
     private final Condition firstProducerCond = lock.newCondition();
@@ -17,9 +21,10 @@ public class UpgradedMonitorBuffer implements IMonitorBuffer{
         this.maxBuffer = maxBuffer;
     }
 
+    @Override
     public void produce(int n) {
         lock.lock();
-        System.out.println(Thread.currentThread().getName()+" want to produce "+n);
+        System.out.println(Thread.currentThread().getName() + " want to produce " + n);
         int tries = 1;
         try {
             while (waitingProducer) {
@@ -27,7 +32,7 @@ public class UpgradedMonitorBuffer implements IMonitorBuffer{
                 tries++;
             }
             waitingProducer = true;
-            while (2*maxBuffer - buffer < n) {
+            while (2 * maxBuffer - buffer < n) {
 
                 firstProducerCond.await();
                 tries++;
@@ -45,9 +50,10 @@ public class UpgradedMonitorBuffer implements IMonitorBuffer{
         }
     }
 
+    @Override
     public void consume(int n) {
         lock.lock();
-        System.out.println(Thread.currentThread().getName()+" want to consume "+n);
+        System.out.println(Thread.currentThread().getName() + " want to consume " + n);
         int tries = 1;
         try {
             while (waitingConsumer) {
@@ -61,6 +67,8 @@ public class UpgradedMonitorBuffer implements IMonitorBuffer{
                 tries++;
             }
             buffer -= n;
+            total_items_consumed += n;
+            total_times_consumed++;
             waitingConsumer = false;
             otherConsumersCond.signal();
             firstProducerCond.signal();
@@ -71,5 +79,15 @@ public class UpgradedMonitorBuffer implements IMonitorBuffer{
         } finally {
             lock.unlock();
         }
+    }
+
+    @Override
+    public long get_total_consumed() {
+        return total_items_consumed;
+    }
+
+    @Override
+    public long get_total_operations() {
+        return total_times_consumed;
     }
 }
