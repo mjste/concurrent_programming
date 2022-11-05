@@ -4,21 +4,16 @@ import BufferMonitors.IMonitorBuffer;
 
 import java.util.Random;
 
-public class Producer implements Runnable {
-    private final IMonitorBuffer monitorBuffer;
-    private final int bound;
-    private final long seed;
+public class Producer extends AbstractProdCons {
 
     public Producer(IMonitorBuffer monitorBuffer, int bound, long seed) {
-        this.monitorBuffer = monitorBuffer;
-        this.bound = bound;
-        this.seed = seed;
+        super(monitorBuffer, bound, seed);
     }
 
     @Override
     public void run() {
         Random random = new Random(seed);
-        while (true) {
+        while (!stopped) {
             monitorBuffer.produce(random.nextInt(bound) + 1);
         }
     }

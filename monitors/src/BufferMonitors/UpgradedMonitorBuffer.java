@@ -24,7 +24,7 @@ public class UpgradedMonitorBuffer implements IMonitorBuffer {
     @Override
     public void produce(int n) {
         lock.lock();
-        System.out.println(Thread.currentThread().getName() + " want to produce " + n);
+//        System.out.println(Thread.currentThread().getName() + " want to produce " + n);
         int tries = 1;
         try {
             while (waitingProducer) {
@@ -42,7 +42,7 @@ public class UpgradedMonitorBuffer implements IMonitorBuffer {
             otherProducersCond.signal();
             firstConsumerCond.signal();
 //            System.out.printf("%s produced %d after %d try/tries, buffer: %d\n", Thread.currentThread().getName(), n, tries, buffer);
-            System.out.printf("%d\n", tries);
+//            System.out.printf("%d\n", tries);
         } catch (InterruptedException ignored) {
 
         } finally {
@@ -53,7 +53,7 @@ public class UpgradedMonitorBuffer implements IMonitorBuffer {
     @Override
     public void consume(int n) {
         lock.lock();
-        System.out.println(Thread.currentThread().getName() + " want to consume " + n);
+//        System.out.println(Thread.currentThread().getName() + " want to consume " + n);
         int tries = 1;
         try {
             while (waitingConsumer) {
@@ -73,7 +73,7 @@ public class UpgradedMonitorBuffer implements IMonitorBuffer {
             otherConsumersCond.signal();
             firstProducerCond.signal();
 //            System.out.printf("%s produced %d after %d try/tries, buffer: %d\n", Thread.currentThread().getName(), n, tries, buffer);
-            System.out.printf("%d\n", tries);
+//            System.out.printf("%d\n", tries);
         } catch (InterruptedException ignored) {
 
         } finally {

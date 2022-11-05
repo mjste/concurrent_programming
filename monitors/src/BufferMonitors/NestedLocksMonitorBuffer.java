@@ -24,7 +24,7 @@ public class NestedLocksMonitorBuffer implements IMonitorBuffer {
     @Override
     public void produce(int n) {
         producerLock.lock();
-        System.out.println(Thread.currentThread().getName() + " want to produce " + n);
+//        System.out.println(Thread.currentThread().getName() + " want to produce " + n);
         commonLock.lock();
         while (2 * maxBuffer - buffer < n) {
             try {
@@ -34,7 +34,7 @@ public class NestedLocksMonitorBuffer implements IMonitorBuffer {
             }
         }
         buffer += n;
-        System.out.println(Thread.currentThread().getName() + " produced " + n);
+//        System.out.println(Thread.currentThread().getName() + " produced " + n);
         consumerCondition.signal();
         commonLock.unlock();
         producerLock.unlock();
@@ -43,7 +43,7 @@ public class NestedLocksMonitorBuffer implements IMonitorBuffer {
     @Override
     public void consume(int n) {
         consumerLock.lock();
-        System.out.println(Thread.currentThread().getName() + " want to consume " + n);
+//        System.out.println(Thread.currentThread().getName() + " want to consume " + n);
         commonLock.lock();
         while (buffer < n) {
             try {
@@ -55,7 +55,7 @@ public class NestedLocksMonitorBuffer implements IMonitorBuffer {
         buffer -= n;
         total_items_consumed += n;
         total_times_consumed++;
-        System.out.println(Thread.currentThread().getName() + " consumed " + n);
+//        System.out.println(Thread.currentThread().getName() + " consumed " + n);
         producerCondition.signal();
         commonLock.unlock();
         consumerLock.unlock();
