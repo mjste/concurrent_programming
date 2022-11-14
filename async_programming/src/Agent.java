@@ -2,14 +2,14 @@ import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 
 public abstract class Agent implements Runnable {
-    protected final BlockingQueue<SchedulerTask> proxyQueue;
+    protected final Scheduler scheduler;
     protected final Random random = new Random();
     protected final int randomBound;
     protected boolean stopped = false;
     protected boolean paused = false;
 
-    public Agent(BlockingQueue<SchedulerTask> proxyQueue, int randomBound) {
-        this.proxyQueue = proxyQueue;
+    public Agent(Scheduler scheduler, int randomBound) {
+        this.scheduler = scheduler;
         this.randomBound = randomBound;
     }
 

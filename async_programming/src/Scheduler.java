@@ -5,8 +5,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class Scheduler {
     private Thread thread;
-    public final BlockingQueue<SchedulerTask> proxyQueue;
-    private final Queue<SchedulerTask> waitingQueue = new LinkedList<>();
+    public final BlockingQueue<Package> proxyQueue;
+    private final Queue<Package> waitingQueue = new LinkedList<>();
     public final BufferMonitor bufferMonitor;
     boolean paused = false;
     boolean stopped = false;
@@ -30,25 +30,29 @@ public class Scheduler {
         thread = new Thread(() -> {
             while (!stopped) {
                 if (!paused) {
+                    Package pack;
                     SchedulerTask task;
                     while (waitingQueue.size() > 0) {
-                        task = waitingQueue.peek();
+                        pack = waitingQueue.peek();
+                        task = pack.task;
                         if (task.canRun(bufferMonitor)) {
-                            task = waitingQueue.remove();
-                            task.run(bufferMonitor);
+                            waitingQueue.remove();
+                            task.run(bufferMonitor, pack.response);
                         } else {
                             break;
                         }
                     }
+
                     try {
-                        task = proxyQueue.take();
+                        pack = proxyQueue.take();
+                        task = pack.task;
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
                     if (task.canRun(bufferMonitor)) {
-                        task.run(bufferMonitor);
+                        task.run(bufferMonitor, pack.response);
                     } else {
-                        waitingQueue.add(task);
+                        waitingQueue.add(pack);
                     }
                 }
             }
@@ -57,7 +61,12 @@ public class Scheduler {
     }
 
     public Response request(SchedulerTask task) {
-        //TODO
-        return new Response();
+        Package pack = new Package(task);
+        try {
+            proxyQueue.put(pack);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return pack.response;
     }
 }
