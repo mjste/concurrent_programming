@@ -56,5 +56,8 @@ public class Scheduler {
         thread.start();
     }
 
-
+    public Response request(SchedulerTask task) {
+        //TODO
+        return new Response();
+    }
 }
