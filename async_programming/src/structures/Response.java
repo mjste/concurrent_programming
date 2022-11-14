@@ -1,8 +1,10 @@
+package structures;
+
 import java.util.List;
 
 public class Response {
-    boolean done = false;
-    List<Integer> result;
+    public boolean done = false;
+    public List<Integer> result;
 
     public boolean isDone() {
         return done;

@@ -1,8 +1,10 @@
+package structures;
+
 public class BufferMonitor {
     public long total_get = 0;
-    public final int capacity;
-    public final int[] buffer;
-    public int stored = 0;
+    private final int capacity;
+    private final int[] buffer;
+    private int stored = 0;
 
     public BufferMonitor(int capacity) {
         this.capacity = capacity;
@@ -20,5 +22,13 @@ public class BufferMonitor {
         total_get++;
 //        System.out.printf("[Buffer] Take (%d), stored: %d\n", buffer[stored], stored);
         return buffer[stored];
+    }
+
+    public int getStored() {
+        return stored;
+    }
+
+    public int getCapacity() {
+        return capacity;
     }
 }
