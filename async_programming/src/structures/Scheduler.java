@@ -7,8 +7,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class Scheduler {
-    private final BlockingQueue<MethodWrapper> proxyQueue;
-    private final Queue<MethodWrapper> internalQueue;
+    private final BlockingQueue<MethodWrapper> proxyQueue; // Queue representing proxy
+    private final Queue<MethodWrapper> internalQueue; // Queue representing tasks that can't be currently done
     private Thread thread;
     private Boolean stopped = false;
 
@@ -18,6 +18,7 @@ public class Scheduler {
         run();
     }
 
+    // Scheduler thread
     private void run() {
         thread = new Thread(() -> {
             MethodWrapper wrapper;
@@ -47,6 +48,7 @@ public class Scheduler {
         thread.start();
     }
 
+    // This function acts as request proxy
     public Response request(MethodWrapper methodWrapper) throws InterruptedException {
         proxyQueue.put(methodWrapper);
         return methodWrapper.getResponse();

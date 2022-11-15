@@ -3,8 +3,7 @@ package structures;
 import java.util.List;
 
 public abstract class MethodWrapper {
-    protected final Response response = new Response();
-
+    protected final Response response = new Response(); // empty response, set at the end of execute method
     protected final BufferMonitor bufferMonitor;
     protected final List<Integer> integerList;
 

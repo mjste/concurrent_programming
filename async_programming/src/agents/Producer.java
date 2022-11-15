@@ -8,10 +8,10 @@ import structures.Scheduler;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Producer extends AbstractAgent {
+public class Producer extends AbstractAsyncAgent {
 
-    public Producer(Scheduler scheduler, BufferMonitor bufferMonitor, long seed, int bound, boolean verbose) {
-        super(scheduler, bufferMonitor, seed, bound, verbose);
+    public Producer(Scheduler scheduler, BufferMonitor bufferMonitor, long seed, int bound, boolean verbose, long workToDo) {
+        super(scheduler, bufferMonitor, seed, bound, verbose, workToDo);
         run();
     }
 
@@ -28,16 +28,24 @@ public class Producer extends AbstractAgent {
                 try {
                     response = scheduler.request(new PutMethod(bufferMonitor, list));
                     if (verbose) {
-                        System.out.printf("[%s], requesting to produce %d, %s\n", Thread.currentThread().getName(), n, list.toString());
+                        System.out.printf("[%s], requesting to produce %d, %s\n", Thread.currentThread().getName(), n, list);
                     }
                 } catch (InterruptedException e) {
                     stopped = true;
                     break;
                 }
 
-                while (!response.isDone()) {
-                    double b = Math.cos(3);
+                long counter = 0;
+                while (!response.isDone() && !stopped) {
+                    for (long i = 0; i < workToDo; i++) {
+                        double b = Math.cos(3);
+                    }
+                    counter++;
                 }
+                if (stopped) {
+                    break;
+                }
+                tasksDone.add(counter);
                 if (verbose) {
                     System.out.printf("[%s], production successful\n", Thread.currentThread().getName());
                 }

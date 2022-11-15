@@ -3,53 +3,41 @@ import agents.Producer;
 import structures.BufferMonitor;
 import structures.Scheduler;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 public class Main {
-    public static void main(String[] args) throws InterruptedException{
-        /*
-        structures.Scheduler scheduler = new structures.Scheduler(50, 5);
-        int randomBound  = 10;
+    public static void main(String[] args) throws InterruptedException {
+        ArgumentParser argParser = new ArgumentParser(args);
 
-        int producers = 5;
-        int consumers = 5;
-
-        for (int i = 0; i < consumers; i++) {
-            agents.Consumer consumer = new agents.Consumer(scheduler, randomBound);
-            new Thread(consumer).start();
-        }
-        for (int i = 0; i < producers; i++) {
-            agents.Producer producer = new agents.Producer(scheduler, randomBound);
-            new Thread(producer).start();
-        }
-
-        Thread.sleep(2*1000);
-
-        scheduler.stop();
-        Thread.sleep(50);
-
-        System.out.println(scheduler.bufferMonitor.total_get);
-
-
-        */
         Scheduler scheduler = new Scheduler(100);
-        BufferMonitor bufferMonitor = new BufferMonitor(20);
+        BufferMonitor bufferMonitor = new BufferMonitor(2 * argParser.bound, false);
+        List<Producer> producerList = new ArrayList<>();
+        List<Consumer> consumerList = new ArrayList<>();
 
-        int producers = 2;
-        int consumers = 2;
-        int bound = 10;
 
-        for (int i = 0; i < producers; i++) {
-            Producer producer = new Producer(scheduler, bufferMonitor, i, bound, true);
+        for (int i = 0; i < argParser.producers; i++) {
+            Producer producer = new Producer(scheduler, bufferMonitor, i, argParser.bound, false, argParser.workToDo);
+            producerList.add(producer);
         }
-        for (int i = 0; i < consumers; i++) {
-            Consumer consumer = new Consumer(scheduler, bufferMonitor, i, bound, true);
+        for (int i = 0; i < argParser.consumers; i++) {
+            Consumer consumer = new Consumer(scheduler, bufferMonitor, i, argParser.bound, false, argParser.workToDo);
+            consumerList.add(consumer);
         }
 
-        Thread.sleep(1000);
+        Thread.sleep(argParser.time);
 
         scheduler.stop();
+        for (Producer producer : producerList)
+            producer.stop();
+        for (Consumer consumer : consumerList)
+            consumer.stop();
+
         Thread.sleep(50);
 
-        System.out.println(bufferMonitor.total_get);
+        // Metric 1: total consumed
+        System.out.println(bufferMonitor.totalGet);
 
 
     }

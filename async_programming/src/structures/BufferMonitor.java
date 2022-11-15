@@ -1,26 +1,32 @@
 package structures;
 
 public class BufferMonitor {
-    public long total_get = 0;
+    public long totalGet = 0;
     private final int capacity;
     private final int[] buffer;
     private int stored = 0;
+    private final boolean verbose;
 
-    public BufferMonitor(int capacity) {
+    public BufferMonitor(int capacity, boolean verbose) {
         this.capacity = capacity;
         this.buffer = new int[capacity];
+        this.verbose = verbose;
     }
 
     public void put(int value) {
         buffer[stored] = value;
         stored++;
-//        System.out.printf("[Buffer] Put (%d), stored: %d\n", value, stored);
+        if (verbose) {
+            System.out.printf("[Buffer] Put (%d), stored: %d\n", value, stored);
+        }
     }
 
     public int get() {
         stored--;
-        total_get++;
-//        System.out.printf("[Buffer] Take (%d), stored: %d\n", buffer[stored], stored);
+        totalGet++;
+        if (verbose) {
+            System.out.printf("[Buffer] Take (%d), stored: %d\n", buffer[stored], stored);
+        }
         return buffer[stored];
     }
 
