@@ -68,17 +68,42 @@ W uproszczeniu: dla każdego producenta mamy listę liczników (doneWork). Dla k
 ## Badane parametry
 * Liczba producentów: 1, 2, 4, 8, 16
 * Liczba konsumentów: 1, 2, 4, 8, 16
-* Liczba wykonanej pracy $amount$: 10, 100, 1000
+* Liczba wykonanej pracy: 10, 100, 1000
+
+Liczba producentów jest zawsze większa lub równa liczbie konsumentów
 
 ## Wyniki
+<div style="text-align: center;">
+
 ![alt text](Figure_1.png "Title")
+
 Rysunek 1. Porównanie czasów wykonania dla pracy=10
+
 ![alt text](Figure_2.png "Title")
+
 Rysunek 2. Porównanie czasów wykonania dla pracy=100
+
 ![alt text](Figure_3.png "Title")
+
 Rysunek 3. Porównanie czasów wykonania dla pracy=1000
 
+![alt text](Figure_4.png "Title")
+
+Rysunek 4. Liczba wykonania zadań (iteracji pętli) w modelu asynchronicznym dla pracy = 10
+
+![alt text](Figure_5.png "Title")
+
+Rysunek 5. Liczba wykonania zadań (iteracji pętli) w modelu asynchronicznym dla pracy = 100
+
+![alt text](Figure_6.png "Title")
+
+Rysunek 6. Liczba wykonania zadań (iteracji pętli) w modelu asynchronicznym dla pracy = 1000
+
+</div>
+
 ## Wnioski
-* W przypadku asynchronicznym liczba wątków (producentów i konsumentów) ma spory wpływ na czas wykonanie $x$ operacji. W większości przypadków im więcej wątków tym dłuższy czas obsługi. Dla przypadku synchronicznego ta liczba nie miała większego znaczenia.
-* Rozmiar wykonanej pracy w przypadku synchronicznym sprawiał, że czas wykonania zadania wzrastał. W przypadku asynchronicznym wraz jeśli było mało wątków i to szybsza była wersja z małą ilością pracy, natomiast w przypadku wielu, szybsza okazywała się wersja z dużą ilością pracy. Może być to spowodowane przez mniej dostępów do współdzielonej kolejki blokującej.
+* W przypadku asynchronicznym liczba wątków (producentów i konsumentów) ma spory wpływ na czas wykonanie x operacji. W większości przypadków im więcej wątków tym dłuższy czas obsługi. Dla przypadku synchronicznego ta liczba nie miała większego znaczenia.
+* Wzrost wykonywanej pracy w przypadku synchronicznym sprawiał, że czas wykonania zadania równomiernie wzrastał. W przypadku asynchronicznym wraz jeśli było mało wątków i to szybsza była wersja z małą ilością pracy, natomiast w przypadku wielu, szybsza okazywała się wersja z dużą ilością pracy. Może być to spowodowane przez mniej dostępów do współdzielonej kolejki blokującej.
+* Wzrost wykonywanej pracy w modelu asynchronicznym sprawiał, że w przypadku dużej ilości wykonywanej pracy stosunkowo malała. Być może jest to spowodowane przez rzadsze zlecanie pracy wątkowi koordynującemu dostęp do bufora.
+* W zastosowanej implementacji w każdym przypadku model synchroniczny okazał się szybszy. Jednak potencjalnie mógłby okazać się lepszy w przypadku dużej ilości pracy do wywołania między kolejnymi dostępami do bufora. Inny przypadek który mógłby faworyzować podejście asynchroniczne to taki, gdzie nie mamy bezpośredniej możliwości wpływać na dostęp do bufora, lub jest on bardzo wolny jak na przykład w systemach rozproszonych.
 

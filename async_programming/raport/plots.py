@@ -27,7 +27,6 @@ with open("results_async.txt", "r") as file:
 
 # print(results_async_list)
 
-
 # sync
 results_sync_list = []
 with open("results_sync.txt", "r") as file:
@@ -55,41 +54,51 @@ with open("results_sync.txt", "r") as file:
         results_sync_list.append(result)
 
 
-workDone = 1000
 
-fig = plt.figure(figsize=(10, 4))
-ax1 = fig.add_subplot(121, projection='3d')
-ax2 = fig.add_subplot(122, projection='3d')
+
+workDone = 1000
+fig = plt.figure(figsize=(5, 4))
+# fig = plt.figure(figsize=(10, 4))
+ax1 = fig.add_subplot(111, projection='3d')
+# ax1 = fig.add_subplot(121, projection='3d')
+# ax2 = fig.add_subplot(122, projection='3d')
 
 
 width = depth = 1
 x = [ prod for prod, cons, work, _, _, _ in results_async_list if work == workDone]
 y = [ cons for prod, cons, work, _, _, _ in results_async_list if work == workDone]
-async_times = [ time[0] for prod, cons, work, time, _, _ in results_async_list if work == workDone]
-bottom = np.zeros_like(async_times)
+a_top = [ time[0] for prod, cons, work, time, prod_work, cons_work in results_async_list if work == workDone]
+a_top = [ prod_work[0] for prod, cons, work, time, prod_work, cons_work in results_async_list if work == workDone]
+a_top = [ cons_work[0] for prod, cons, work, time, prod_work, cons_work in results_async_list if work == workDone]
+bottom = np.zeros_like(a_top)
 
-ax1.bar3d(x, y, bottom, width, depth, async_times, shade=True)
-ax1.set_title(f'Czas wykonania programu asynchronicznego\ndla pracy={workDone}')
+ax1.bar3d(x, y, bottom, width, depth, a_top, shade=True)
+ax1.set_title(f'Liczba pętli pracy producenta asynchronicznego\ndla pracy={workDone}')
+# ax1.set_title(f'Czas wykonania programu asynchronicznego\ndla pracy={workDone}')
 ax1.set_xlabel('Producenci')
 ax1.set_ylabel('Konsumenci')
-ax1.set_zlabel('Czas [s]')
+# ax1.set_zlabel('Czas [s]')
+ax1.set_zlabel('Licznik pętli')
 
+#######################################################################################
 
 x = [ prod for prod, cons, work, _, _, _ in results_sync_list if work == workDone]
 y = [ cons for prod, cons, work, _, _, _ in results_sync_list if work == workDone]
-sync_times = [ time[0] for prod, cons, work, time, _, _ in results_sync_list if work == workDone]
-bottom = np.zeros_like(sync_times)
-
-# print([ prod for prod, cons, work, _, _, _ in results_async_list] == [ prod for prod, cons, work, _, _, _ in results_sync_list])
+s_top = [ time[0] for prod, cons, work, time, prod_work, cons_work  in results_sync_list if work == workDone]
+bottom = np.zeros_like(s_top)
 
 # print(results_sync_list)
-ax2.bar3d(x, y, bottom, width, depth, sync_times, shade=True)
-ax2.set_title(f'Czas wykonania programu synchronicznego\ndla pracy={workDone}.')
-ax2.set_xlabel('Producenci')
-ax2.set_ylabel('Konsumenci')
-ax2.set_zlabel('Czas [s]')
-
-
+# ax2.bar3d(x, y, bottom, width, depth, s_top, shade=True)
+# ax2.set_title(f'Czas wykonania programu synchronicznego\ndla pracy={workDone}.')
+# ax2.set_xlabel('Producenci')
+# ax2.set_ylabel('Konsumenci')
+# ax2.set_zlabel('Czas [s]')
 
 plt.show()
-fig.savefig('Figure_3.png')
+fig.savefig('Figure_6.png')
+
+
+##############################################################
+# workDone = 10
+# fig = plt.figure(figsize=(10, 4))
+# ax1 = fig.add_subplot(111, projection='3d')
