@@ -1,44 +1,25 @@
-import agents.Consumer;
-import agents.Producer;
-import structures.BufferMonitor;
-import structures.Scheduler;
+import engines.AsyncEngine;
+import engines.IEngine;
+import engines.SyncEngine;
+import other.ArgumentParser;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException {
         ArgumentParser argParser = new ArgumentParser(args);
 
-        Scheduler scheduler = new Scheduler(100);
-        BufferMonitor bufferMonitor = new BufferMonitor(2 * argParser.bound, false);
-        List<Producer> producerList = new ArrayList<>();
-        List<Consumer> consumerList = new ArrayList<>();
-
-
-        for (int i = 0; i < argParser.producers; i++) {
-            Producer producer = new Producer(scheduler, bufferMonitor, i, argParser.bound, false, argParser.workToDo);
-            producerList.add(producer);
-        }
-        for (int i = 0; i < argParser.consumers; i++) {
-            Consumer consumer = new Consumer(scheduler, bufferMonitor, i, argParser.bound, false, argParser.workToDo);
-            consumerList.add(consumer);
+        IEngine engine;
+        switch (argParser.type) {
+            case "sync" -> engine = new SyncEngine(argParser);
+            case "async" -> engine = new AsyncEngine(argParser);
+            default -> throw new RuntimeException();
         }
 
-        Thread.sleep(argParser.time);
-
-        scheduler.stop();
-        for (Producer producer : producerList)
-            producer.stop();
-        for (Consumer consumer : consumerList)
-            consumer.stop();
-
-        Thread.sleep(50);
-
-        // Metric 1: total consumed
-        System.out.println(bufferMonitor.totalGet);
-
-
+        // Metrics:
+        // 1: time to handle n requests
+        // 2: mean times of done tasks by producers
+        // 3: mean times of done tasks by consumers
+        System.out.printf("%.3f %.3f %.3f\n", (double) (engine.getTime()) / 1000000000, engine.getProdMean(), engine.getConsMean());
     }
 }
+

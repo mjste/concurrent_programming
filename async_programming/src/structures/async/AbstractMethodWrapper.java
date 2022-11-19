@@ -1,13 +1,15 @@
-package structures;
+package structures.async;
+
+import structures.BufferMonitor;
 
 import java.util.List;
 
-public abstract class MethodWrapper {
+public abstract class AbstractMethodWrapper {
     protected final Response response = new Response(); // empty response, set at the end of execute method
     protected final BufferMonitor bufferMonitor;
     protected final List<Integer> integerList;
 
-    MethodWrapper(BufferMonitor bufferMonitor, List<Integer> integerList) {
+    AbstractMethodWrapper(BufferMonitor bufferMonitor, List<Integer> integerList) {
         this.bufferMonitor = bufferMonitor;
         this.integerList = integerList;
     }

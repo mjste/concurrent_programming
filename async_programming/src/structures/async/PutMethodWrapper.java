@@ -1,10 +1,12 @@
-package structures;
+package structures.async;
+
+import structures.BufferMonitor;
 
 import java.util.List;
 
-public class PutMethod extends MethodWrapper {
+public class PutMethodWrapper extends AbstractMethodWrapper {
 
-    public PutMethod(BufferMonitor bufferMonitor, List<Integer> integerList) {
+    public PutMethodWrapper(BufferMonitor bufferMonitor, List<Integer> integerList) {
         super(bufferMonitor, integerList);
     }
 

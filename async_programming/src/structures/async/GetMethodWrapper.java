@@ -1,12 +1,14 @@
-package structures;
+package structures.async;
+
+import structures.BufferMonitor;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetMethod extends MethodWrapper {
+public class GetMethodWrapper extends AbstractMethodWrapper {
     private final int take;
 
-    public GetMethod(BufferMonitor bufferMonitor, int take) {
+    public GetMethodWrapper(BufferMonitor bufferMonitor, int take) {
         super(bufferMonitor, null);
         this.take = take;
     }
