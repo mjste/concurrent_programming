@@ -1,0 +1,15 @@
+Opisywać osie, rysunki
+Odnosić się do rysunków
+NAZYWAĆ RZECZY
+Dodać parametry sprzętu
+Dać dodatkową pracę albo sleepa na schedulerze/monitorze
+Można zsumować producentów i konsumentów -> mniej parametrów
+Wykresy znormalizowe
+Zmienić skalę osi na np. logarytmiczne ?
+Dać więcej pracy
+
+Producenci -> liczba producentów
+Podpisać lepiej wykresy, opisy musza być deskryptywne!!!
+zrobić badanie w większej skali pracy
+spis treści
+wywalić ew jako opcjonalne stosunek prducentów do konsumentów, default ma być 1:1
