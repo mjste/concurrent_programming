@@ -4,12 +4,17 @@
 Badanie miało na celu porównanie sprawności działania dwóch podejść do problemu producentów i konsumentów. Pierwsze z nich to synchroniczny bufor korzystający z podwójnych blokad. Drugie jest oparte na wzorcu projektowym ActiveObject. Dodatkowe parametry rozpatrywane w badaniu to:
 * liczba producentów
 * liczba konsumentów
-* ilość wykonanej pracy pomiędzy kolejnymi akcjami agentów tj. produkcją lub konsumpcją
+* ilość wykonywanej pracy pomiędzy kolejnymi akcjami agentów tj. produkcją lub konsumpcją
+* ilość wykonywanej pracy przy obsłużenia bufora
+
+## Sprzęt
+* System operacyjny: Ubuntu 22.10 x86_64
+* Procesor: Intel i7-7500U (4) @ 3.500GHz 2-rdzeniowy 4-wątkowy
+* Pamięć: 8GB
 
 ## Metoda badania
-Eksperyment polegał na mierzeniu wybranych metryk przy wybraniu określonej liczby producentów, liczby konsumentów, ilości wykonanej pracy.
+Eksperyment polegał na mierzeniu czasu wykonania programu przy wybraniu określonej liczby producentów, liczby konsumentów, ilości wykonywanej pracy przez agentów oraz ilosci wykonywanej pracy przez bufor.
 ### Pseudokody agentów (producentów, konsumentów)
-W przypadkach asynchronicznych została dołożona dodatkowa zmienna $workCounter$ określająca ilość pracy wykonanej pomiędzy sprawdzeniem dostępności wyniku dostępu do bufora. W przypadkach synchronicznych wartość ta zawsze wynosi 1.
 * synchroniczny producent:
 ```java
 while (true) {
@@ -36,7 +41,6 @@ while (true) {
         doWork(amount); // wykonanie n razy pewnej pracy
         workCounter++;
     }
-    doneWork.append(workCounter); // dopisanie do zewnętrznej listy liczby powtórzeń pętli
 }
 ```
 * asynchroniczny konsument
@@ -50,12 +54,13 @@ while (true) {
         workCounter++;
     }
     newList = futureList.getValue()
-    doneWork.append(workCounter); // dopisanie do zewnętrznej listy liczby powtórzeń pętli
 }
 ```
+### Dodatkowa praca
+Obiekty buforów oprócz operacji takich jak wstawienie oraz pobranie x elementów bezpośrednio do struktury danych, wykonują pewną pracę. Działa to w taki sposób, że po wykonaniu akcji (wstawienia lub pobrania) wykonują zadaną liczbę obliczania sinusów. Identyczną pracę, w odpowiedniej liczbie powtórzeń) wykonują agenci w swojej części pracy. 
 
 ### Metryki
-1. Rzeczywisty czas potrzebny na pobranie co najmniej 500000 elementów z bufora
+1. Rzeczywisty czas potrzebny na pobranie na co najmniej 50000 elementów z bufora.
 2. Średnia ze średniej pracy producentów wykonanej pomiędzy dostępami do bufora (średnia średnich workDone) w czasie działania programu.
 3. Średnia ze średniej pracy konsumentów wykonanej pomiędzy dostępami do bufora (średnia średnich workDone) w czasie działania programu
 
@@ -63,47 +68,35 @@ Wszystkie te metryki są liczone na raz, więc przez czas działania programu ro
 
 W uproszczeniu: dla każdego producenta mamy listę liczników (doneWork). Dla każdego producenta liczymy średnią pracę. Na koniec liczymy średnią pracę wszystkich producentów (średnią z tych średnich). Analogicznie dla konsumentów.
 
+Ostatecznie w sprawozdaniu została zamieszczona tylko pierwsza, gdyż najwięcej wnosi. Druga i trzecia miały znaczenie pomocnicze przy dobieraniu sensownych parametrów prac.
+
 <div style="page-break-after: always;"></div>
 
 ## Badane parametry
-* Liczba producentów: 1, 2, 4, 8, 16
-* Liczba konsumentów: 1, 2, 4, 8, 16
-* Liczba wykonanej pracy: 10, 100, 1000
+* Sumaryczna liczba producentów i konsumentów: 2, 4, 8
+* Liczba wykonanej pracy przez agentów: 100, 1000, 10000, 100000
+* Liczba wykonanej pracy przez bufor: 100 1000 10000 100000
 
-Liczba producentów jest zawsze większa lub równa liczbie konsumentów
+Liczba producentów jest zawsze równa liczbie konsumentów.
 
 ## Wyniki
+Na wykresach poniżej widzimy czas wykonania się programu w wersji asynchronicznej (po lewej), w wersji synchronicznej (środek), oraz różnice tych czasów (po prawej) w zalezności od sumarycznej liczby wątków oraz zadanych prac.
 <div style="text-align: center;">
 
 ![alt text](Figure_1.png "Title")
 
-Rysunek 1. Porównanie czasów wykonania dla pracy=10
+Rysunek 1. Porównanie synchronicznej i asynchronicznej wersji programu przy 2 wątkach agentów.
 
 ![alt text](Figure_2.png "Title")
 
-Rysunek 2. Porównanie czasów wykonania dla pracy=100
+Rysunek 2. Porównanie synchronicznej i asynchronicznej wersji programu przy 4 wątkach agentów.
 
 ![alt text](Figure_3.png "Title")
 
-Rysunek 3. Porównanie czasów wykonania dla pracy=1000
-
-![alt text](Figure_4.png "Title")
-
-Rysunek 4. Liczba wykonania zadań (iteracji pętli) w modelu asynchronicznym dla pracy = 10
-
-![alt text](Figure_5.png "Title")
-
-Rysunek 5. Liczba wykonania zadań (iteracji pętli) w modelu asynchronicznym dla pracy = 100
-
-![alt text](Figure_6.png "Title")
-
-Rysunek 6. Liczba wykonania zadań (iteracji pętli) w modelu asynchronicznym dla pracy = 1000
+Rysunek 3. Porównanie synchronicznej i asynchronicznej wersji programu przy 8 wątkach agentów.
 
 </div>
 
 ## Wnioski
-* W przypadku asynchronicznym liczba wątków (producentów i konsumentów) ma spory wpływ na czas wykonanie x operacji. W większości przypadków im więcej wątków tym dłuższy czas obsługi. Dla przypadku synchronicznego ta liczba nie miała większego znaczenia.
-* Wzrost wykonywanej pracy w przypadku synchronicznym sprawiał, że czas wykonania zadania równomiernie wzrastał. W przypadku asynchronicznym wraz jeśli było mało wątków i to szybsza była wersja z małą ilością pracy, natomiast w przypadku wielu, szybsza okazywała się wersja z dużą ilością pracy. Może być to spowodowane przez mniej dostępów do współdzielonej kolejki blokującej.
-* Wzrost wykonywanej pracy w modelu asynchronicznym sprawiał, że w przypadku dużej ilości wykonywanej pracy stosunkowo malała. Być może jest to spowodowane przez rzadsze zlecanie pracy wątkowi koordynującemu dostęp do bufora.
-* W zastosowanej implementacji w każdym przypadku model synchroniczny okazał się szybszy. Jednak potencjalnie mógłby okazać się lepszy w przypadku dużej ilości pracy do wywołania między kolejnymi dostępami do bufora. Inny przypadek który mógłby faworyzować podejście asynchroniczne to taki, gdzie nie mamy bezpośredniej możliwości wpływać na dostęp do bufora, lub jest on bardzo wolny jak na przykład w systemach rozproszonych.
-
+* W każdym przypadku wzrost pracy na buforze lub wzrost pracy agentów powodował wydłużenie czasu trwania programu.
+* W przypadku gdy trzeba wykonać dużo więcej pracy na wielu agentach w porównaniu do pracy na buforze, podejście asynchroniczne okazuje się lepsze (Rys. 3, prawy wykres). Zaś w pozostałych przypadkach podejście synchroniczne dało krótszy czas wykonania.

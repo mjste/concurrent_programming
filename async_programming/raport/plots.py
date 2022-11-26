@@ -1,9 +1,11 @@
 import matplotlib.pyplot as plt
+from matplotlib import cm
 import numpy as np
+from math import log10
 
 # async
 results_async_list = []
-with open("results_async.txt", "r") as file:
+with open("results2_async.txt", "r") as file:
     lines = file.readlines()
     lines = [line.strip().split(" ") for line in lines if line != ""]
 
@@ -29,7 +31,7 @@ with open("results_async.txt", "r") as file:
 
 # sync
 results_sync_list = []
-with open("results_sync.txt", "r") as file:
+with open("results2_sync.txt", "r") as file:
     lines = file.readlines()
     lines = [line.strip().split(" ") for line in lines if line != ""]
 
@@ -54,51 +56,66 @@ with open("results_sync.txt", "r") as file:
         results_sync_list.append(result)
 
 
-
-
-workDone = 1000
-fig = plt.figure(figsize=(5, 4))
-# fig = plt.figure(figsize=(10, 4))
-ax1 = fig.add_subplot(111, projection='3d')
-# ax1 = fig.add_subplot(121, projection='3d')
-# ax2 = fig.add_subplot(122, projection='3d')
+totalThreads = 2
+z_min, z_max = 0, 40
+my_cmap = cm.coolwarm
+fig, ax = plt.subplots(1, 3, figsize=(15, 5), subplot_kw={'projection': '3d'})
+ax1, ax2, ax3 = ax
+# ax1 = fig.add_subplot(131, projection='3d')
+# ax2 = fig.add_subplot(132, projection='3d')
+# ax3 = fig.add_subplot(133, projection='3d')
 
 
 width = depth = 1
-x = [ prod for prod, cons, work, _, _, _ in results_async_list if work == workDone]
-y = [ cons for prod, cons, work, _, _, _ in results_async_list if work == workDone]
-a_top = [ time[0] for prod, cons, work, time, prod_work, cons_work in results_async_list if work == workDone]
-a_top = [ prod_work[0] for prod, cons, work, time, prod_work, cons_work in results_async_list if work == workDone]
-a_top = [ cons_work[0] for prod, cons, work, time, prod_work, cons_work in results_async_list if work == workDone]
+x = [ log10(object_work) for threads, object_work, agent_work, _, _, _ in results_async_list if threads == totalThreads]
+y = [ log10(agent_work) for threads, object_work, agent_work, _, _, _ in results_async_list if threads == totalThreads]
+a_top = [ time[0] for threads, object_work, agent_work, time, _, _ in results_async_list if threads == totalThreads]
+z = np.array(a_top).reshape((len(set(x)), len(set(y))))
 bottom = np.zeros_like(a_top)
 
-ax1.bar3d(x, y, bottom, width, depth, a_top, shade=True)
-ax1.set_title(f'Liczba pętli pracy producenta asynchronicznego\ndla pracy={workDone}')
-# ax1.set_title(f'Czas wykonania programu asynchronicznego\ndla pracy={workDone}')
-ax1.set_xlabel('Producenci')
-ax1.set_ylabel('Konsumenci')
-# ax1.set_zlabel('Czas [s]')
-ax1.set_zlabel('Licznik pętli')
+
+ax1.plot_surface(np.array(x).reshape((len(set(x)), len(set(y)))), np.array(y).reshape((len(set(x)), len(set(y)))), z, cmap=my_cmap)
+# ax1.bar3d(x, y, bottom, width, depth, a_top, shade=True)
+ax1.set_title(f'Czas wykonania programu asynchronicznego\n przy {totalThreads} wątkach')
+ax1.set_xlabel('log10 z pracy na buforze')
+ax1.set_ylabel('log10 z pracy agentów')
+ax1.set_zlabel('Czas [s]')
+ax1.view_init(30, -135)
+ax1.set_zlim(z_min, z_max)
 
 #######################################################################################
 
-x = [ prod for prod, cons, work, _, _, _ in results_sync_list if work == workDone]
-y = [ cons for prod, cons, work, _, _, _ in results_sync_list if work == workDone]
-s_top = [ time[0] for prod, cons, work, time, prod_work, cons_work  in results_sync_list if work == workDone]
-bottom = np.zeros_like(s_top)
+a_top = [ time[0] for threads, object_work, agent_work, time, _, _ in results_sync_list if threads == totalThreads]
+z = np.array(a_top).reshape((len(set(x)), len(set(y))))
 
-# print(results_sync_list)
-# ax2.bar3d(x, y, bottom, width, depth, s_top, shade=True)
-# ax2.set_title(f'Czas wykonania programu synchronicznego\ndla pracy={workDone}.')
-# ax2.set_xlabel('Producenci')
-# ax2.set_ylabel('Konsumenci')
-# ax2.set_zlabel('Czas [s]')
+ax2.plot_surface(np.array(x).reshape((len(set(x)), len(set(y)))), np.array(y).reshape((len(set(x)), len(set(y)))), z, cmap=my_cmap)
+# ax2.bar3d(x, y, bottom, width, depth, a_top, shade=True)
+ax2.set_title(f'Czas wykonania programu synchronicznego\n przy {totalThreads} wątkach')
+ax2.set_xlabel('log10 z pracy na buforze')
+ax2.set_ylabel('log10 z praca agentów')
+ax2.set_zlabel('Czas [s]')
+ax2.view_init(30, -135)
+ax2.set_zlim(z_min, z_max)
 
-plt.show()
-fig.savefig('Figure_6.png')
+#######################################################################################
+
+times_async = [ time[0] for threads, object_work, agent_work, time, _, _ in results_async_list if threads == totalThreads]
+times_sync = [ time[0] for threads, object_work, agent_work, time, _, _ in results_sync_list if threads == totalThreads]
+a_top = [ asy - sy for asy, sy in zip(times_async, times_sync) ]
+z = np.array(a_top).reshape((len(set(x)), len(set(y))))
+bottom = np.zeros_like(a_top)
+
+ax3.plot_surface(np.array(x).reshape((len(set(x)), len(set(y)))), np.array(y).reshape((len(set(x)), len(set(y)))), z, cmap=my_cmap)
+# ax3.bar3d(x, y, bottom, width, depth, a_top, shade=True)
+ax3.set_title(f'Różnica w czasie wykonania programów\nt(async)-t(sync)\n przy {totalThreads} wątkach')
+ax3.set_xlabel('log10 z pracy na buforze')
+ax3.set_ylabel('log10 z pracy agentów')
+ax3.set_zlabel('Czas [s]')
+ax3.view_init(30, -135)
+ax3.set_zlim(z_min, z_max)
+
 
 
 ##############################################################
-# workDone = 10
-# fig = plt.figure(figsize=(10, 4))
-# ax1 = fig.add_subplot(111, projection='3d')
+plt.show()
+fig.savefig('Figure_1.png')
