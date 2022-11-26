@@ -1,16 +1,26 @@
 export CLASSPATH="$PWD/out/production/async_programming"
 
-for producers in 1 2 4 8 16 32; do
-  for consumers in 1 2 4 8 16 32; do
-    if ((consumers <= producers)); then
-      for work in 10 100 1000; do
-        for tries in {1..10}; do
+#rm sync.txt
+#rm async.txt
+#
+#for half_threads in 1 2 4 ; do
+#  for object_work in 100 1000 10000 100000 ; do
+#    for agent_work in 100 1000 10000 100000 ; do
+#      for tries in {1..10}; do
+#        echo $((half_threads * 2)) $object_work $agent_work $(java Main --producers=$half_threads --consumers=$half_threads --objectWork=$object_work --agentWork=$agent_work --type=async) | tee -a async.txt
+#        echo $((half_threads * 2)) $object_work $agent_work $(java Main --producers=$half_threads --consumers=$half_threads --objectWork=$object_work --agentWork=$agent_work --type=sync) | tee -a sync.txt
+#      done
+#    done
+#  done
+#done
 
-          echo $producers $consumers $work $(java Main --producers=$producers --consumers=$consumers --work=$work --type=sync )
-        done
+for half_threads in 4 ; do
+  for object_work in 100000 ; do
+    for agent_work in 100 1000 10000 100000 ; do
+      for tries in {1..10}; do
+        echo $((half_threads * 2)) $object_work $agent_work $(java Main --producers=$half_threads --consumers=$half_threads --objectWork=$object_work --agentWork=$agent_work --type=async) | tee -a async.txt
+        echo $((half_threads * 2)) $object_work $agent_work $(java Main --producers=$half_threads --consumers=$half_threads --objectWork=$object_work --agentWork=$agent_work --type=sync) | tee -a sync.txt
       done
-    fi
+    done
   done
 done
-
-

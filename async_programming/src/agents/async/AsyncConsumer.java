@@ -1,6 +1,7 @@
 package agents.async;
 
-import structures.BufferMonitor;
+import other.Utils;
+import structures.async.BufferMonitor;
 import structures.async.GetMethodWrapper;
 import structures.async.Response;
 import structures.async.Scheduler;
@@ -32,9 +33,7 @@ public class AsyncConsumer extends AbstractAsyncAgent {
 
                 long counter = 0;
                 while (!response.isDone() && !stopped) {
-                    for (long i = 0; i < workToDo; i++) {
-                        double a = Math.sin(3);
-                    }
+                    Utils.work(workToDo);
                     counter++;
                 }
                 if (stopped) {

@@ -1,6 +1,7 @@
 package agents.sync;
 
 
+import other.Utils;
 import structures.async.Scheduler;
 import structures.sync.SyncBufferMonitor;
 
@@ -27,9 +28,7 @@ public class SyncProducer extends AbstractSyncAgent{
                 break;
             }
 
-            for (long i = 0; i < workToDo; i++) {
-                double a = Math.sin(3);
-            }
+            Utils.work(workToDo);
 
             tasksDone.add(1L);
 

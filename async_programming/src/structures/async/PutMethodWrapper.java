@@ -1,7 +1,5 @@
 package structures.async;
 
-import structures.BufferMonitor;
-
 import java.util.List;
 
 public class PutMethodWrapper extends AbstractMethodWrapper {
@@ -17,9 +15,7 @@ public class PutMethodWrapper extends AbstractMethodWrapper {
 
     @Override
     void execute() {
-        for (Integer i : integerList) {
-            bufferMonitor.put(i);
-        }
+        bufferMonitor.putList(integerList);
         response.done = true;
     }
 }

@@ -1,10 +1,5 @@
 package structures.async;
 
-import structures.BufferMonitor;
-
-import java.util.ArrayList;
-import java.util.List;
-
 public class GetMethodWrapper extends AbstractMethodWrapper {
     private final int take;
 
@@ -20,11 +15,7 @@ public class GetMethodWrapper extends AbstractMethodWrapper {
 
     @Override
     void execute() {
-        List<Integer> list = new ArrayList<>();
-        for (int i = 0; i < take; i++) {
-            list.add(bufferMonitor.get());
-        }
-        response.result = list;
+        response.result = bufferMonitor.getList(take);
         response.done = true;
     }
 }

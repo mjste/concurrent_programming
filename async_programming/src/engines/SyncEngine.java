@@ -8,8 +8,8 @@ import structures.sync.SyncBufferMonitor;
 import java.util.ArrayList;
 import java.util.List;
 
-import static other.Calc.meanDouble;
-import static other.Calc.meanLong;
+import static other.Utils.meanDouble;
+import static other.Utils.meanLong;
 
 public class SyncEngine implements IEngine {
     public ArgumentParser argParser;
@@ -25,22 +25,22 @@ public class SyncEngine implements IEngine {
     public void run() throws InterruptedException {
         long startTime = System.nanoTime();
 
-        SyncBufferMonitor bufferMonitor = new SyncBufferMonitor(2*argParser.bound);
+        SyncBufferMonitor bufferMonitor = new SyncBufferMonitor(2*argParser.bound, argParser.objectWork);
 
         List<SyncProducer> syncProducerList = new ArrayList<>();
         List<SyncConsumer> syncConsumerList = new ArrayList<>();
 
 
         for (int i = 0; i < argParser.producers; i++) {
-            SyncProducer syncProducer = new SyncProducer(bufferMonitor, i, argParser.bound, false, argParser.workToDo);
+            SyncProducer syncProducer = new SyncProducer(bufferMonitor, i, argParser.bound, false, argParser.agentWork);
             syncProducerList.add(syncProducer);
         }
         for (int i = 0; i < argParser.consumers; i++) {
-            SyncConsumer syncConsumer = new SyncConsumer(bufferMonitor, i, argParser.bound, false, argParser.workToDo);
+            SyncConsumer syncConsumer = new SyncConsumer(bufferMonitor, i, argParser.bound, false, argParser.agentWork);
             syncConsumerList.add(syncConsumer);
         }
 
-        while (bufferMonitor.totalGet < 500000) {
+        while (bufferMonitor.totalGet < argParser.totalGet) {
             Thread.sleep(10);
         }
 

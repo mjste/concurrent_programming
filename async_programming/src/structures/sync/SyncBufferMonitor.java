@@ -1,5 +1,7 @@
 package structures.sync;
 
+import other.Utils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.Condition;
@@ -8,6 +10,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class SyncBufferMonitor {
     public long totalGet = 0;
+    public final long work;
     private final int capacity;
     private final int[] buffer;
     private int stored = 0;
@@ -20,9 +23,10 @@ public class SyncBufferMonitor {
     private final Condition producerCondition = internalLock.newCondition();
     private final Condition consumerCondition = internalLock.newCondition();
 
-    public SyncBufferMonitor(int capacity) {
+    public SyncBufferMonitor(int capacity, long work) {
         this.capacity = capacity;
         this.buffer = new int[capacity];
+        this.work = work;
     }
 
     public void stop() {
@@ -42,7 +46,7 @@ public class SyncBufferMonitor {
             buffer[stored] = value;
             stored++;
         }
-
+        Utils.work(work);
         consumerCondition.signal();
         internalLock.unlock();
         producerLock.unlock();
@@ -62,7 +66,7 @@ public class SyncBufferMonitor {
             totalGet++;
             list.add(buffer[stored]);
         }
-
+        Utils.work(work);
         producerCondition.signal();
         internalLock.unlock();
         consumerLock.unlock();
