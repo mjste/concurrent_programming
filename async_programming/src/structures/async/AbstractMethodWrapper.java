@@ -1,7 +1,5 @@
 package structures.async;
 
-import structures.BufferMonitor;
-
 import java.util.List;
 
 public abstract class AbstractMethodWrapper {

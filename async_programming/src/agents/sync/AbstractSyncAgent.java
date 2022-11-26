@@ -1,7 +1,5 @@
 package agents.sync;
 
-import structures.BufferMonitor;
-import structures.async.Scheduler;
 import structures.sync.SyncBufferMonitor;
 
 import java.util.LinkedList;

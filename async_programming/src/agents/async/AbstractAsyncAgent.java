@@ -1,6 +1,6 @@
 package agents.async;
 
-import structures.BufferMonitor;
+import structures.async.BufferMonitor;
 import structures.async.Scheduler;
 
 import java.util.LinkedList;
