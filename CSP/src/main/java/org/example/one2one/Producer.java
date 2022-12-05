@@ -1,4 +1,4 @@
-package org.example;
+package org.example.one2one;
 
 import org.jcsp.lang.CSProcess;
 import org.jcsp.lang.One2OneChannelInt;
