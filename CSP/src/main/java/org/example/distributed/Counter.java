@@ -8,11 +8,7 @@ public class Counter {
     public static void increment() {
         long val = counter.incrementAndGet();
         if (val % 100000 == 0) {
-            System.out.printf("Counter: %d\n", val);
+//            System.out.printf("Counter: %d\n", val);
         }
-    }
-
-    public static long get() {
-        return counter.get();
     }
 }

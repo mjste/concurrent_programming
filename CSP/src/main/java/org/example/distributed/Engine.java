@@ -5,9 +5,9 @@ import org.jcsp.lang.One2OneChannelInt;
 import org.jcsp.lang.Parallel;
 
 public final class Engine {
-    private final int numberOfAgents = 1000;
-    private final int delay = 1;
-    private final boolean randomDelay = true;
+    private final int numberOfAgents = 10;
+    private final int delay_ms = 0;
+    private final boolean isRandomDelay = true;
 
     public Engine() {
         Producer[] producers = new Producer[numberOfAgents];
@@ -17,6 +17,7 @@ public final class Engine {
         One2OneChannelInt[] consumerChannels = new One2OneChannelInt[numberOfAgents];
         One2OneChannelInt[] requestChannels = new One2OneChannelInt[numberOfAgents];
         One2OneChannelInt[] bufferChannels = new One2OneChannelInt[2 * numberOfAgents];
+
 
         for (int i = 0; i < numberOfAgents; i++) {
             producerChannels[i] = org.jcsp.lang.Channel.one2oneInt();
@@ -28,8 +29,8 @@ public final class Engine {
         }
 
         for (int i = 0; i < numberOfAgents; i++) {
-            producers[i] = new Producer(producerChannels[i].out(), i, delay, randomDelay);
-            consumers[i] = new Consumer(consumerChannels[i].in(), requestChannels[i].out(), i, delay, randomDelay);
+            producers[i] = new Producer(producerChannels[i].out(), i, delay_ms, isRandomDelay, false);
+            consumers[i] = new Consumer(consumerChannels[i].in(), requestChannels[i].out(), i, (int)(delay_ms), isRandomDelay, false);
             int successor_out = 2 * i;
             int successor_in = 2 * i + 1;
 
@@ -46,13 +47,20 @@ public final class Engine {
                     bufferChannels[predecessor_out].out(),
                     bufferChannels[successor_out].out(),
                     (long) i,
-                    delay,
-                    randomDelay);
+                    delay_ms,
+                    isRandomDelay,
+                    100,
+                    false);
         }
 
         buffers[0].setHasToken(true);
 
         Parallel parallel = new Parallel(new CSProcess[][]{producers, consumers, buffers});
+
+        Monitor monitor = new Monitor(parallel, buffers);
+        Thread monitorThread = new Thread(monitor);
+        monitorThread.start();
+
         parallel.run();
     }
 }

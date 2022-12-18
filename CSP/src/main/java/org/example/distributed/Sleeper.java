@@ -1,11 +1,11 @@
 package org.example.distributed;
 
 public class Sleeper {
-    public static void sleep(int delay) {
+    public static void sleepFixed(int delay) {
         try {
             Thread.sleep(delay);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
     }
 
@@ -13,7 +13,15 @@ public class Sleeper {
         try {
             Thread.sleep((int) (Math.random() * delay));
         } catch (InterruptedException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+        }
+    }
+
+    public static void sleep(int delay, boolean randomDelay) {
+        if (randomDelay) {
+            sleepRandom(delay);
+        } else {
+            sleepFixed(delay);
         }
     }
 }
